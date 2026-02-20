@@ -8,7 +8,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_PREFIX: ${{ github.repository_owner }}/ab-business-portal
+  IMAGE_PREFIX: jiyeon-h/ab-business-portal
 
 jobs:
   # ── Lint + Type-check ────────────────────────────────────────────────────────

@@ -96,7 +96,7 @@ export function useAddressSearch(): UseAddressSearchResult {
     return () => {
       controller.abort();
     };
-  }, [debouncedQuery]);
+  }, [debouncedQuery, isSelected]);
 
   function clearSuggestions(selected = false): void {
     setSuggestions([]);
