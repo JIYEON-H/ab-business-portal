@@ -37,9 +37,9 @@ interface StaffDashboardProps {
 const DEFAULT_BBOX = { north: 51.18, south: 50.88, east: -113.9, west: -114.25 };
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
-  Active:   { bg: '#dcfce7', color: '#166534' },
+  Active: { bg: '#dcfce7', color: '#166534' },
   Inactive: { bg: '#fef3c7', color: '#92400e' },
-  Expired:  { bg: '#fee2e2', color: '#991b1b' },
+  Expired: { bg: '#fee2e2', color: '#991b1b' },
 };
 
 function statusStyle(status: string): { bg: string; color: string } {
@@ -63,14 +63,14 @@ function rawStr(val: unknown): string {
 // ─── Column definitions ───────────────────────────────────────────────────────
 
 const COLUMNS = [
-  { key: 'id',       label: 'License #',    sensitive: false },
-  { key: 'name',     label: 'Business Name', sensitive: false },
-  { key: 'category', label: 'Category',      sensitive: false },
-  { key: 'status',   label: 'Status',        sensitive: false },
-  { key: 'address',  label: 'Address',       sensitive: false },
-  { key: 'owner',    label: 'Owner',         sensitive: true  },
-  { key: 'phone',    label: 'Phone',         sensitive: true  },
-  { key: 'issued',   label: 'Issued',        sensitive: false },
+  { key: 'id', label: 'License #', sensitive: false },
+  { key: 'name', label: 'Business Name', sensitive: false },
+  { key: 'category', label: 'Category', sensitive: false },
+  { key: 'status', label: 'Status', sensitive: false },
+  { key: 'address', label: 'Address', sensitive: false },
+  { key: 'owner', label: 'Owner', sensitive: true },
+  { key: 'phone', label: 'Phone', sensitive: true },
+  { key: 'issued', label: 'Issued', sensitive: false },
 ] as const;
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -113,10 +113,10 @@ export function StaffDashboard({
   onBackToMap,
 }: StaffDashboardProps): JSX.Element {
   const [businesses, setBusinesses] = useState<StaffBusinessRecord[]>([]);
-  const [loading, setLoading]       = useState(false);
-  const [error, setError]           = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [loadedAt, setLoadedAt]     = useState<Date | null>(null);
+  const [loadedAt, setLoadedAt] = useState<Date | null>(null);
 
   const loadData = useCallback(async (): Promise<void> => {
     setLoading(true);
@@ -373,7 +373,7 @@ export function StaffDashboard({
         {/* No filter results */}
         {!loading && businesses.length > 0 && filtered.length === 0 && (
           <p style={{ color: '#6b7280', fontSize: '0.875rem' }}>
-            No records match <strong>"{searchQuery}"</strong>. Try a different search term.
+            No records match <strong>&quot;{searchQuery}&quot;</strong>. Try a different search term.
           </p>
         )}
 
