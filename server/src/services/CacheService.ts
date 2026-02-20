@@ -13,15 +13,17 @@ class InMemoryBackend implements CacheBackend {
 
   async get(key: string): Promise<string | null> {
     const val = this.store.get<string>(key);
-    return val ?? null;
+    return Promise.resolve(val ?? null);
   }
 
   async set(key: string, value: string, ttlSeconds: number): Promise<void> {
     this.store.set(key, value, ttlSeconds);
+    return Promise.resolve();
   }
 
   async del(key: string): Promise<void> {
     this.store.del(key);
+    return Promise.resolve();
   }
 }
 

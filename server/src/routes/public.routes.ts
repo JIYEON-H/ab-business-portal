@@ -27,11 +27,16 @@ const categoriesSchema = z.object({
   limit: z.coerce.number().int().positive().max(500).default(100),
 });
 
+const asyncHandler = (fn: (req: Request, res: Response) => Promise<any>) =>
+  (req: Request, res: Response, next: any) => {
+    Promise.resolve(fn(req, res)).catch(next);
+  };
+
 /**
  * GET /api/v1/businesses
  * Returns businesses within a bounding box (public whitelist only).
  */
-router.get('/', async (req: Request, res: Response): Promise<void> => {
+router.get('/', asyncHandler(async (req, res) => {
   const parsed = bboxSchema.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid query parameters', details: parsed.error.flatten() });
@@ -58,13 +63,13 @@ router.get('/', async (req: Request, res: Response): Promise<void> => {
     console.error('fetchByBoundingBox error:', err);
     res.status(502).json({ error: 'Upstream data source unavailable' });
   }
-});
+}));
 
 /**
  * GET /api/v1/businesses/nearby
  * Returns businesses within a radius (metres) of a lat/lng point.
  */
-router.get('/nearby', async (req: Request, res: Response): Promise<void> => {
+router.get('/nearby', asyncHandler(async (req, res) => {
   const parsed = nearbySchema.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid query parameters', details: parsed.error.flatten() });
@@ -91,13 +96,13 @@ router.get('/nearby', async (req: Request, res: Response): Promise<void> => {
     console.error('fetchByRadius error:', err);
     res.status(502).json({ error: 'Upstream data source unavailable' });
   }
-});
+}));
 
 /**
  * GET /api/v1/businesses/categories
  * Returns business category counts for gap analysis.
  */
-router.get('/categories', async (req: Request, res: Response): Promise<void> => {
+router.get('/categories', asyncHandler(async (req, res) => {
   const parsed = categoriesSchema.safeParse(req.query);
   if (!parsed.success) {
     res.status(400).json({ error: 'Invalid query parameters', details: parsed.error.flatten() });
@@ -123,6 +128,6 @@ router.get('/categories', async (req: Request, res: Response): Promise<void> => 
     console.error('fetchCategories error:', err);
     res.status(502).json({ error: 'Upstream data source unavailable' });
   }
-});
+}));
 
 export default router;

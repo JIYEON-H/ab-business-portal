@@ -56,7 +56,7 @@ export class CalgaryBusinessLicenseAdapter implements DataSourceAdapter {
   async fetchByBoundingBox(bbox: BoundingBox, limit = SOCRATA_PAGE_LIMIT): Promise<BusinessRecord[]> {
     const where = `POINT IS NOT NULL AND within_box(POINT, ${bbox.north}, ${bbox.west}, ${bbox.south}, ${bbox.east})`;
 
-    const { data } = await this.client.get<any[]>('', {
+    const { data } = await this.client.get<SocrataRecord[]>('', {
       params: {
         $where: where,
         $limit: limit,
@@ -64,7 +64,7 @@ export class CalgaryBusinessLicenseAdapter implements DataSourceAdapter {
       },
     });
 
-    return data.map((r) => this.toBusinessRecord(r));
+    return data.map((r: SocrataRecord) => this.toBusinessRecord(r));
   }
 
   async fetchByRadius(query: RadiusQuery): Promise<BusinessRecord[]> {
@@ -84,7 +84,7 @@ export class CalgaryBusinessLicenseAdapter implements DataSourceAdapter {
 
     // Client-side Haversine filter for accuracy within the bounding-box pre-filter
     return records
-      .filter((r) => r.lat !== null && r.lng !== null && haversine(lat, lng, r.lat!, r.lng!) <= radiusMetres)
+      .filter((r) => r.lat !== null && r.lng !== null && haversine(lat, lng, r.lat as number, r.lng as number) <= radiusMetres)
       .slice(0, limit);
   }
 
