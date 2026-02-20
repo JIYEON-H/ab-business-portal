@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router, Request, Response, NextFunction } from 'express';
 import { z } from 'zod';
 import { CalgaryBusinessLicenseAdapter } from '../adapters/CalgaryBusinessLicenseAdapter';
 import { cacheService, CacheService } from '../services/CacheService';
@@ -27,9 +27,11 @@ const categoriesSchema = z.object({
   limit: z.coerce.number().int().positive().max(500).default(100),
 });
 
-const asyncHandler = (fn: (req: Request, res: Response) => Promise<any>) =>
-  (req: Request, res: Response, next: any) => {
-    Promise.resolve(fn(req, res)).catch(next);
+export const asyncHandler = (fn: (req: Request, res: Response) => Promise<any>) =>
+  (req: Request, res: Response, next: NextFunction): void => {
+    void Promise.resolve(fn(req, res)).catch((err: unknown) => {
+      next(err);
+    });
   };
 
 /**

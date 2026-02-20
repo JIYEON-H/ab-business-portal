@@ -45,7 +45,7 @@ export class CalgaryBusinessLicenseAdapter implements DataSourceAdapter {
 
     axiosRetry(this.client, {
       retries: 3,
-      retryDelay: axiosRetry.exponentialDelay,
+      retryDelay: (retryCount) => axiosRetry.exponentialDelay(retryCount),
       retryCondition: (err) => {
         const status = err.response?.status;
         return axiosRetry.isNetworkError(err) || status === 429 || (status !== undefined && status >= 500);
@@ -84,7 +84,7 @@ export class CalgaryBusinessLicenseAdapter implements DataSourceAdapter {
 
     // Client-side Haversine filter for accuracy within the bounding-box pre-filter
     return records
-      .filter((r) => r.lat !== null && r.lng !== null && haversine(lat, lng, r.lat as number, r.lng as number) <= radiusMetres)
+      .filter((r) => r.lat !== null && r.lng !== null && haversine(lat, lng, r.lat, r.lng) <= radiusMetres)
       .slice(0, limit);
   }
 

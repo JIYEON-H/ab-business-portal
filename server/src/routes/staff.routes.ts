@@ -6,6 +6,7 @@ import { cacheService, CacheService } from '../services/CacheService';
 import { toStaffRecords } from '../transformers/staffBusinessTransformer';
 import { requireJwt, requireRole } from '../middleware/jwtAuth.middleware';
 import { env } from '../config/env';
+import { asyncHandler } from './public.routes';
 
 const router = Router();
 const adapter = new CalgaryBusinessLicenseAdapter();
@@ -98,7 +99,7 @@ router.get(
   '/staff/businesses',
   requireJwt,
   requireRole('staff'),
-  async (req: Request, res: Response): Promise<void> => {
+  asyncHandler(async (req: Request, res: Response): Promise<void> => {
     const parsed = bboxSchema.safeParse(req.query);
     if (!parsed.success) {
       res.status(400).json({ error: 'Invalid query parameters', details: parsed.error.flatten() });
@@ -126,7 +127,7 @@ router.get(
       console.error('staff fetchByBoundingBox error:', err);
       res.status(502).json({ error: 'Upstream data source unavailable' });
     }
-  },
+  })
 );
 
 export default router;
