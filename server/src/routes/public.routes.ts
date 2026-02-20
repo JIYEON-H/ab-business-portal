@@ -27,7 +27,7 @@ const categoriesSchema = z.object({
   limit: z.coerce.number().int().positive().max(500).default(100),
 });
 
-export const asyncHandler = (fn: (req: Request, res: Response) => Promise<any>) =>
+export const asyncHandler = (fn: (req: Request, res: Response) => Promise<unknown>) =>
   (req: Request, res: Response, next: NextFunction): void => {
     void Promise.resolve(fn(req, res)).catch((err: unknown) => {
       next(err);

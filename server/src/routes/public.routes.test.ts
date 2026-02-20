@@ -6,6 +6,26 @@ process.env.NODE_ENV = 'test';
 process.env.SOCRATA_APP_TOKEN = 'test-token';
 process.env.JWT_SECRET = 'test-secret-at-least-32-characters-long!!';
 
+interface BusinessRecord {
+  id: string;
+  name: string;
+  category: string;
+  licenseType: string;
+  status: string;
+}
+
+interface CategorySummary {
+  category: string;
+  count: number;
+  source: string;
+}
+
+interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+}
+
 // Mock the CalgaryBusinessLicenseAdapter so tests don't hit Socrata
 jest.mock('../adapters/CalgaryBusinessLicenseAdapter', () => {
   return {
@@ -53,7 +73,7 @@ describe('Public Routes', () => {
     it('returns 200 with status ok', async () => {
       const res = await request(app).get('/api/health');
       expect(res.status).toBe(200);
-      expect(res.body.status).toBe('ok');
+      expect((res.body as Record<string, unknown>).status).toBe('ok');
     });
   });
 
@@ -64,7 +84,8 @@ describe('Public Routes', () => {
       const res = await request(app).get('/api/v1/businesses').query(validParams);
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body[0].id).toBe('BL-001');
+      const body = res.body as BusinessRecord[];
+      expect(body[0].id).toBe('BL-001');
     });
 
     it('strips PII fields (owner_name) from response', async () => {
@@ -78,7 +99,7 @@ describe('Public Routes', () => {
     it('returns 400 when bounding box params are missing', async () => {
       const res = await request(app).get('/api/v1/businesses').query({ north: 51.1 });
       expect(res.status).toBe(400);
-      expect(res.body.error).toBeDefined();
+      expect((res.body as Record<string, unknown>).error).toBeDefined();
     });
 
     it('returns 400 for out-of-range coordinates', async () => {
@@ -123,8 +144,9 @@ describe('Public Routes', () => {
       const res = await request(app).get('/api/v1/businesses/categories');
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
-      expect(res.body[0].category).toBe('Food Service');
-      expect(res.body[0].count).toBe(1250);
+      const body = res.body as CategorySummary[];
+      expect(body[0].category).toBe('Food Service');
+      expect(body[0].count).toBe(1250);
     });
   });
 
@@ -162,9 +184,10 @@ describe('Public Routes', () => {
         .post('/api/v1/auth/login')
         .send({ email: 'staff@gov.ab.ca', password: 'password123' });
       expect(res.status).toBe(200);
-      expect(res.body.accessToken).toBeDefined();
-      expect(res.body.refreshToken).toBeDefined();
-      expect(res.body.tokenType).toBe('Bearer');
+      const body = res.body as LoginResponse;
+      expect(body.accessToken).toBeDefined();
+      expect(body.refreshToken).toBeDefined();
+      expect(body.tokenType).toBe('Bearer');
     });
 
     it('returns 400 for invalid email format', async () => {
